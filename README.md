@@ -167,21 +167,6 @@ NEWS_API_URL=
 | Trending | github |
 | Hot list (NewsNow + 兜底) | weibo, zhihu, douyin, bilibili-hot, toutiao, tieba, wallstreetcn-hot, cls-hot, baidu |
 
-## 与原项目 TrendSearch-main 的关系
-
-本 skill **借鉴** TrendSearch-main 的核心架构：
-- `BaseDataSource + DataItem` 数据源抽象
-- `DataStore` SQLite 模式
-- 13 个数据源列表
-- 报告 + 看板的可视化思路
-
-**彻底重写** AI 调用链：
-- ❌ LangChain agent framework → ❌ 不需要
-- ❌ 6 大 pipeline → ❌ 不需要
-- ❌ embedding → ❌ 不需要
-- ❌ FastAPI + React → ✅ click CLI + 单文件 HTML
-- ✅ Claude 在对话中承担所有"思考"工作
-
 ## License
 
 MIT
