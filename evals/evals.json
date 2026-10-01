@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "skill_name": "daily-news",
+  "evals": [
+    {
+      "id": 1,
+      "should_trigger": true,
+      "prompt": "用 daily-news 拉一下今天的科技热点",
+      "expected_output": "Claude 自动执行 fetch + query news 流程，输出新闻列表"
+    },
+    {
+      "id": 2,
+      "should_trigger": true,
+      "prompt": "今天的 AI 新闻里有什么值得做的东西？",
+      "expected_output": "Claude 跑 fetch + query + 挖需求 + save-needs，给出可执行的产品想法"
+    },
+    {
+      "id": 3,
+      "should_trigger": true,
+      "prompt": "挖一下近 7 天新闻里的需求",
+      "expected_output": "Claude 查询近 7 天新闻，挖掘需求并入库"
+    },
+    {
+      "id": 4,
+      "should_trigger": true,
+      "prompt": "导出 2026-09-30 的需求清单",
+      "expected_output": "Claude 调用 export demands --format csv/json 生成导出文件"
+    },
+    {
+      "id": 5,
+      "should_trigger": true,
+      "prompt": "看看 Hacker News 和机器之心最近在讨论什么",
+      "expected_output": "Claude 抓取 hackernews（RSS 稳定）+ 查询需求"
+    },
+    {
+      "id": 6,
+      "should_trigger": false,
+      "prompt": "Python 里 feedparser 怎么用？",
+      "expected_output": "应直接回答 feedparser 用法，不触发 daily-news skill（无新闻/需求意图）"
+    },
+    {
+      "id": 7,
+      "should_trigger": false,
+      "prompt": "修复这个 bug：脚本运行时崩溃",
+      "expected_output": "应诊断 bug，不触发 skill（无新闻抓取/需求挖掘意图）"
+    },
+    {
+      "id": 8,
+      "should_trigger": false,
+      "prompt": "帮我写一首关于秋天的诗",
+      "expected_output": "应直接写诗，不触发 skill"
+    }
+  ]
+}

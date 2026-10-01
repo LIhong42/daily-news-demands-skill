@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "sources": [
+    {"name": "weibo",            "type": "hot_list", "category": "social",    "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "weibo"},
+    {"name": "zhihu",            "type": "hot_list", "category": "qa",        "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "zhihu"},
+    {"name": "bilibili_hot",     "type": "hot_list", "category": "video",     "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "bilibili"},
+    {"name": "douyin",           "type": "hot_list", "category": "video",     "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "douyin"},
+    {"name": "toutiao",          "type": "hot_list", "category": "news",      "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "toutiao"},
+    {"name": "tieba",            "type": "hot_list", "category": "community", "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "tieba"},
+    {"name": "github_trending",  "type": "trending", "category": "tech",      "language": "en", "enabled": true,  "limit": 15},
+    {"name": "hackernews",       "type": "rss",      "category": "tech",      "language": "en", "enabled": true,  "limit": 25},
+    {"name": "wallstreetcn_hot", "type": "hot_list", "category": "finance",   "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "wallstreetcn-hot"},
+    {"name": "cls_hot",          "type": "hot_list", "category": "finance",   "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "cls-hot"},
+    {"name": "ifeng",            "type": "rss",      "category": "news",      "language": "zh", "enabled": true,  "limit": 30},
+    {"name": "thepaper",         "type": "rss",      "category": "news",      "language": "zh", "enabled": true,  "limit": 30},
+    {"name": "baidu",            "type": "hot_list", "category": "search",    "language": "zh", "enabled": true,  "limit": 20, "newsnow_id": "baidu"}
+  ],
+  "fetch_strategy": {
+    "timeout_seconds": 30,
+    "rate_limit_delay": 1.0,
+    "concurrency": 4,
+    "cache_per_day": true,
+    "cache_note": "每个数据源每天最多远程抓取一次；其余 fetch 调用直接读 SQLite"
+  }
+}

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>每日热点简报 · {{ date }}</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #fafbfc;
+  --fg: #1a1a1a;
+  --fg-2: #555;
+  --fg-3: #888;
+  --card: #fff;
+  --border: #e5e7eb;
+  --border-2: #d1d5db;
+  --accent: #2563eb;
+  --accent-2: #1d4ed8;
+  --high: #10b981;
+  --mid: #f59e0b;
+  --low: #ef4444;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+  --code: #f3f4f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1419;
+    --fg: #e4e6eb;
+    --fg-2: #a0a8b4;
+    --fg-3: #6b7280;
+    --card: #1a1f2e;
+    --border: #2d3748;
+    --border-2: #4a5568;
+    --accent: #60a5fa;
+    --accent-2: #93c5fd;
+    --high: #34d399;
+    --mid: #fbbf24;
+    --low: #f87171;
+    --code: #1f2937;
+  }
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+}
+.container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+header h1 { margin: 0; font-size: 28px; }
+.meta { color: var(--fg-2); font-size: 14px; }
+.meta strong { color: var(--fg); font-size: 18px; margin: 0 4px; }
+
+nav.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+nav.tabs button {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--fg-2);
+  border-bottom: 2px solid transparent;
+  font-family: inherit;
+}
+nav.tabs button.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+nav.tabs button:hover { color: var(--fg); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.toolbar input, .toolbar select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+}
+.toolbar input { flex: 1; min-width: 200px; }
+
+.grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  box-shadow: var(--shadow);
+}
+.card:hover { box-shadow: var(--shadow-hover); border-color: var(--border-2); }
+.card h3 { margin: 0 0 8px; font-size: 16px; }
+.card h3 a { color: var(--fg); text-decoration: none; }
+.card h3 a:hover { color: var(--accent); }
+.card .source-badge {
+  display: inline-block;
+  background: var(--code);
+  color: var(--fg-2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 8px;
+}
+.card .summary { color: var(--fg-2); font-size: 14px; margin: 6px 0; }
+.card .meta { font-size: 12px; color: var(--fg-3); margin-top: 8px; }
+.card .meta a { color: var(--accent); text-decoration: none; }
+
+/* Kanban */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.kanban-col {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+}
+.kanban-col h3 {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid;
+  font-size: 15px;
+}
+.kanban-col.high h3 { border-color: var(--high); color: var(--high); }
+.kanban-col.mid h3  { border-color: var(--mid);  color: var(--mid); }
+.kanban-col.low h3  { border-color: var(--low);  color: var(--low); }
+.kanban-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.kanban-card .title { font-weight: 600; margin-bottom: 4px; }
+.kanban-card .info { color: var(--fg-2); font-size: 13px; line-height: 1.5; }
+.kanban-card .info p { margin: 4px 0; }
+.kanban-card .tags { margin-top: 6px; }
+.tag-chip {
+  display: inline-block;
+  background: var(--code);
+  color: var(--fg-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+/* Dashboard */
+.dash-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.dash-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.dash-card h3 { margin: 0 0 12px; font-size: 16px; }
+.stat-number { font-size: 32px; font-weight: 700; color: var(--accent); }
+.stat-label { color: var(--fg-2); font-size: 13px; }
+
+/* Tag cloud */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-cloud .tag-chip { font-size: 14px; padding: 4px 10px; }
+
+.mermaid { background: var(--card); padding: 16px; border-radius: 8px; }
+
+footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--fg-3);
+  font-size: 13px;
+  text-align: center;
+}
+.empty { color: var(--fg-3); padding: 40px; text-align: center; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div>
+    <h1>📰 每日热点简报</h1>
+    <div class="meta">日期: <strong>{{ date }}</strong> · 生成于 {{ generated_at }}</div>
+  </div>
+  <div class="meta">
+    🗞 <strong>{{ total_news }}</strong> 条新闻 · 💡 <strong>{{ total_demands }}</strong> 条需求
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" data-tab="dashboard">📊 Dashboard</button>
+  <button data-tab="news">📰 新闻</button>
+  <button data-tab="demands">💡 需求</button>
+  <button data-tab="tags">🏷️ Tags</button>
+</nav>
+
+<!-- Dashboard -->
+<div class="tab-panel active" id="panel-dashboard">
+  <div class="dash-grid">
+    <div class="dash-card">
+      <h3>📈 数据概览</h3>
+      <p><span class="stat-number">{{ total_news }}</span> <span class="stat-label">条新闻</span></p>
+      <p><span class="stat-number">{{ total_demands }}</span> <span class="stat-label">条需求</span></p>
+      <p><span class="stat-number">{{ source_dist | length }}</span> <span class="stat-label">个来源</span></p>
+    </div>
+    <div class="dash-card">
+      <h3>🎯 需求可行性分布</h3>
+      <pre class="mermaid">
+pie title 需求可行性
+    "高" : {{ feas_dist['高'] }}
+    "中" : {{ feas_dist['中'] }}
+    "低" : {{ feas_dist['低'] }}
+      </pre>
+    </div>
+    <div class="dash-card">
+      <h3>📡 来源分布</h3>
+      <pre class="mermaid">
+%%{init: {"themeVariables": {"fontSize": "12px"}}}%%
+pie title 新闻来源
+{% for src, c in source_dist.items() %}
+    "{{ src }}" : {{ c }}
+{% endfor %}
+      </pre>
+    </div>
+  </div>
+</div>
+
+<!-- News -->
+<div class="tab-panel" id="panel-news">
+  <div class="toolbar">
+    <input type="text" id="news-search" placeholder="🔍 搜索新闻标题或摘要...">
+    <select id="news-source-filter">
+      <option value="">全部来源</option>
+      {% for src in source_dist.keys() %}
+      <option value="{{ src }}">{{ src }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="grid" id="news-grid"></div>
+</div>
+
+<!-- Demands -->
+<div class="tab-panel" id="panel-demands">
+  <div class="toolbar">
+    <input type="text" id="demand-search" placeholder="🔍 搜索需求标题或场景...">
+  </div>
+  <div class="kanban">
+    <div class="kanban-col high">
+      <h3>🟢 高可行性</h3>
+      <div id="demands-high"></div>
+    </div>
+    <div class="kanban-col mid">
+      <h3>🟡 中可行性</h3>
+      <div id="demands-mid"></div>
+    </div>
+    <div class="kanban-col low">
+      <h3>🔴 低可行性</h3>
+      <div id="demands-low"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tags -->
+<div class="tab-panel" id="panel-tags">
+  <div class="dash-card">
+    <h3>🏷️ 需求标签云（按频次）</h3>
+    <div class="tag-cloud">
+      {% for tag, count in top_tags %}
+      <span class="tag-chip" style="font-size: {{ 12 + count * 4 }}px;">{{ tag }} ({{ count }})</span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<footer>
+  daily-news skill · 数据存储于 SQLite · Powered by Claude · {{ generated_at }}
+</footer>
+
+</div>
+
+<script>
+// ==================== 数据 ====================
+const NEWS_DATA = {{ news_json | safe }};
+const DEMANDS_DATA = {{ demands_json | safe }};
+
+// ==================== 工具 ====================
+function escapeHTML(s) {
+  if (!s) return "";
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+function parseTags(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw !== "string") return [];
+  try { return JSON.parse(raw); } catch { return []; }
+}
+
+// ==================== Tab ====================
+document.querySelectorAll("nav.tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll("nav.tabs button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-" + tab).classList.add("active");
+  });
+});
+
+// ==================== News 渲染 ====================
+function renderNews(filter = "", sourceFilter = "") {
+  const grid = document.getElementById("news-grid");
+  const filtered = NEWS_DATA.filter(n => {
+    const title = (n.title || "").toLowerCase();
+    const summary = (n.summary || "").toLowerCase();
+    const okText = !filter || title.includes(filter.toLowerCase()) || summary.includes(filter.toLowerCase());
+    const okSource = !sourceFilter || n.source === sourceFilter;
+    return okText && okSource;
+  });
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">无匹配新闻</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(n => `
+    <div class="card">
+      <h3><a href="${escapeHTML(n.url)}" target="_blank">${escapeHTML(n.title || "(无标题)")}</a></h3>
+      <div>
+        <span class="source-badge">${escapeHTML(n.source || "?")}</span>
+        ${n.score ? `<span class="source-badge">🔥 ${n.score}</span>` : ""}
+      </div>
+      ${n.summary ? `<div class="summary">${escapeHTML(n.summary)}</div>` : ""}
+      ${n.hot_reason ? `<div class="summary"><b>热点:</b> ${escapeHTML(n.hot_reason)}</div>` : ""}
+      <div class="meta"><a href="${escapeHTML(n.url)}" target="_blank">🔗 原文</a></div>
+    </div>
+  `).join("");
+}
+
+// ==================== Demands 渲染 ====================
+function renderDemands(filter = "") {
+  const buckets = { "高": [], "中": [], "低": [] };
+  DEMANDS_DATA.forEach(d => {
+    const f = d.feasibility || "中";
+    if (!buckets[f]) buckets[f] = [];
+    buckets[f].push(d);
+  });
+  ["高", "中", "低"].forEach(feas => {
+    const container = document.getElementById("demands-" + (feas === "高" ? "high" : feas === "中" ? "mid" : "low"));
+    const items = (buckets[feas] || []).filter(d => {
+      if (!filter) return true;
+      const hay = (d.title || "") + " " + (d.demand_scenario || "") + " " + (d.description || "");
+      return hay.toLowerCase().includes(filter.toLowerCase());
+    });
+    if (items.length === 0) {
+      container.innerHTML = '<div class="empty">无匹配需求</div>';
+      return;
+    }
+    container.innerHTML = items.map(d => {
+      const tags = parseTags(d.tags);
+      return `
+        <div class="kanban-card">
+          <div class="title">${escapeHTML(d.title)}</div>
+          <div class="info">
+            <p><b>优先级:</b> ${d.priority_score || 0}/10</p>
+            ${d.user_profile ? `<p><b>用户:</b> ${escapeHTML(d.user_profile)}</p>` : ""}
+            ${d.demand_scenario ? `<p><b>场景:</b> ${escapeHTML(d.demand_scenario)}</p>` : ""}
+            ${d.proposed_solution ? `<p><b>MVP:</b> ${escapeHTML(d.proposed_solution)}</p>` : ""}
+          </div>
+          ${tags.length > 0 ? `<div class="tags">${tags.map(t => `<span class="tag-chip">${escapeHTML(t)}</span>`).join("")}</div>` : ""}
+        </div>
+      `;
+    }).join("");
+  });
+}
+
+// ==================== 绑定 ====================
+const newsSearch = document.getElementById("news-search");
+const newsSource = document.getElementById("news-source-filter");
+const demandSearch = document.getElementById("demand-search");
+
+if (newsSearch) newsSearch.addEventListener("input", e => renderNews(e.target.value, newsSource.value));
+if (newsSource) newsSource.addEventListener("change", e => renderNews(newsSearch.value, e.target.value));
+if (demandSearch) demandSearch.addEventListener("input", e => renderDemands(e.target.value));
+
+// 初始渲染
+renderNews();
+renderDemands();
+
+// Mermaid 初始化
+if (window.mermaid) {
+  mermaid.initialize({ startOnLoad: true, theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default' });
+}
+</script>
+
+</body>
+</html>

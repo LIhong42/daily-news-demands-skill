@@ -1,0 +1,48 @@
+# 需求清单 · {{ date }}
+
+> 生成时间: {{ generated_at }} | 共 **{{ total }}** 条需求
+
+---
+
+## 可行性看板
+
+| 可行性 | 数量 |
+|--------|------|
+| 🟢 高 | {{ groups['高'] | length }} |
+| 🟡 中 | {{ groups['中'] | length }} |
+| 🔴 低 | {{ groups['低'] | length }} |
+
+---
+
+{% for feas, items in groups.items() %}
+## {% if feas == '高' %}🟢 高可行性（{{ items | length }}）{% elif feas == '中' %}🟡 中可行性（{{ items | length }}）{% else %}🔴 低可行性（{{ items | length }}）{% endif %}
+
+{% if not items %}
+*暂无该可行性等级的需求*
+
+{% else %}
+{% for d in items %}
+### {{ d.title }}
+
+- **优先级**: {{ d.priority_score or 0 }} / 10 · **可行性**: {{ d.feasibility }}
+{% if d.demand_scenario %}- **场景**: {{ d.demand_scenario }}
+{% endif %}
+{% if d.user_profile %}- **目标用户**: {{ d.user_profile }}
+{% endif %}
+{% if d.description %}- **描述**: {{ d.description }}
+{% endif %}
+{% if d.value %}- **价值**: {{ d.value }}
+{% endif %}
+{% if d.proposed_solution %}- **MVP 方案**: {{ d.proposed_solution }}
+{% endif %}
+{% if d.tags %}- **标签**: {{ d.tags | join(', ') }}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+---
+
+{% endfor %}
+
+<sub>由 Claude 在对话中挖掘 · daily-news skill 生成</sub>

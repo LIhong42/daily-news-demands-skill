@@ -1,0 +1,35 @@
+# 每日热点新闻 · {{ date }}
+
+> 生成时间: {{ generated_at }} | 共 **{{ total }}** 条新闻 · **{{ sources_count }}** 个来源
+
+---
+
+## 来源速览
+
+{% for src, items in grouped.items() %}
+- **{{ src }}**: {{ items | length }} 条
+{% endfor %}
+
+---
+
+{% for src, items in grouped.items() %}
+## {{ src }}（{{ items | length }} 条）
+
+{% for n in items %}
+### [{{ n.title }}]({{ n.url }})
+
+- **来源**: {{ n.source }} · **热度**: {{ n.score or 0 }} · **抓取**: {{ n.fetched_at or n.created_at or '' }}
+{% if n.summary %}- **摘要**: {{ n.summary }}
+{% endif %}
+{% if n.hot_reason %}- **热点原因**: {{ n.hot_reason }}
+{% endif %}
+{% if n.main_points %}- **要点**: {{ n.main_points }}
+{% endif %}
+
+{% endfor %}
+
+---
+
+{% endfor %}
+
+<sub>由 daily-news skill 生成 · Powered by Claude · SQLite 存储</sub>
